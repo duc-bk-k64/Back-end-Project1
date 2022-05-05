@@ -1,0 +1,14 @@
+package javaGuides.duc.Exception;
+
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+public class ResourseNotFoundException extends RuntimeException {
+
+	public ResourseNotFoundException(String message) {
+		super(message);
+	}
+
+}
