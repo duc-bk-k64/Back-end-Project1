@@ -100,7 +100,7 @@ public class StudentController {
 	}
 
 	@PostMapping("/add")
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_STUDENT')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ApiOperation("Make relation betwwen account and student")
 	public ResponseEntity<String> add(@RequestParam String username, @RequestParam String code) {
 		User user = accountService.findByUsername(username);
@@ -132,6 +132,35 @@ public class StudentController {
 		if (user.getStudent() == null)
 			return ResponseEntity.ok().body("Not found information");
 		return ResponseEntity.ok().body(user.getStudent().getDetails());
+	}
+
+	@GetMapping("/detail")
+	public ResponseEntity<String> getDetail(@RequestParam String code) {
+		try {
+			Student student = service.findStudentByStudentCode(code);
+			if (student == null)
+				return ResponseEntity.ok().body("Student not found in system");
+			return ResponseEntity.ok().body(student.getDetail().getDetail());
+		} catch (Exception e) {
+			throw new BadRequestException(e.getMessage());
+		}
+
+	}
+
+	@GetMapping("/form")
+	public ResponseEntity<List<String>> getForm(@RequestParam String code) {
+		List<String> list = new ArrayList<>();
+		Student student = service.findStudentByStudentCode(code);
+
+		if (student == null) {
+			list.add("Student not found in system");
+			return ResponseEntity.ok().body(list);
+		}
+		student.getForms().forEach(form -> {
+			list.add(form.getDetail());
+		});
+		return ResponseEntity.ok().body(list);
+
 	}
 
 }

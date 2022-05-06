@@ -58,4 +58,10 @@ public class Form {
 	public void setStudent(Student student) {
 		this.student = student;
 	}
+	public String getDetail() {
+		if(this.student!=null) {
+			return "Student code:"+this.student.getStudentCode()+" Name:"+this.name+" Status:"+this.status+" Time:"+this.time;
+		}
+		else return "Form "+this.id+" has no student";
+	}
 }

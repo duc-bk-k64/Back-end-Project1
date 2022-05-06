@@ -51,5 +51,8 @@ public class FormService {
 			throw new BadRequestException(e.getMessage());
 		}
 	}
+	public Form save(Form form) {
+		return formRepository.save(form);
+	}
 
 }

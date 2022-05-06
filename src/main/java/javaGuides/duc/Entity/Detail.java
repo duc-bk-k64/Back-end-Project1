@@ -64,4 +64,12 @@ public class Detail {
 	public void setStudent(Student student) {
 		this.student = student;
 	}
+	public String getDetail() {
+		if(this.student!=null) {
+		String detail="Code:"+this.student.getStudentCode()+" Comment:"+this.comment+"  Time in:"+this.timeIn+" Time out:"+this.timeOut+" Photo url:"+this.photo;
+		return detail;
+		}
+		return "Detail has no student";
+		
+	}
 }

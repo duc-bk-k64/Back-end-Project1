@@ -5,6 +5,13 @@ public class FormDTO {
 	private String name;
 	private String status;
 	private Instant time;
+	private String code;
+	public FormDTO(String name,String status,Instant time,String code) {
+		this.name=name;
+		this.status=status;
+		this.time=time;
+		this.code=code;
+	}
 	public String getName() {
 		return name;
 	}
@@ -29,6 +36,5 @@ public class FormDTO {
 	public void setCode(String code) {
 		this.code = code;
 	}
-	private String code;
 
 }
