@@ -25,7 +25,7 @@ public class Role {
 	@Column(length = 60)
 	private String name;
 	@ManyToMany(mappedBy = "roles")
-	Set<User> user;
+	private Set<User> user;
 
 	public long getId() {
 		return id;

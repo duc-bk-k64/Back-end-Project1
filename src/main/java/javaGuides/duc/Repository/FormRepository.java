@@ -3,8 +3,9 @@ package javaGuides.duc.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import javaGuides.duc.Entity.Role;
+import javaGuides.duc.Entity.Form;
+
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
-	Role findByName(String name);
+public interface FormRepository extends JpaRepository<Form,Long> {
+
 }

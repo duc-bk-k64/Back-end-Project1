@@ -54,6 +54,19 @@ public class User {
 	private Student student;
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private teacher teacher;
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "user_activity", joinColumns = {
+			@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false) }, inverseJoinColumns = {
+					@JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false) })
+	private Set<Activity> activities;
+
+	public Set<Activity> getActivities() {
+		return activities;
+	}
+
+	public void setActivities(Set<Activity> activities) {
+		this.activities = activities;
+	}
 
 	public long getId() {
 		return id;
@@ -74,7 +87,6 @@ public class User {
 	public void setTeacher(teacher teacher) {
 		this.teacher = teacher;
 	}
-
 
 	public String getUsername() {
 		return username;
@@ -121,8 +133,7 @@ public class User {
 	}
 
 	public String getDetail(User user) {
-		String detailString = "Username:" + user.getUsername() + " " + "Email:"
-				+ user.getEmail();
+		String detailString = "Username:" + user.getUsername() + " " + "Email:" + user.getEmail();
 		return detailString;
 	}
 

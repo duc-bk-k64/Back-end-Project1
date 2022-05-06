@@ -1,14 +1,20 @@
 package javaGuides.duc.Entity;
 
 import java.time.Instant;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -33,6 +39,51 @@ public class Student {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "account_id", referencedColumnName = "id")
 	private User user;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "detail_id", referencedColumnName = "id")
+	private Detail detail;
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "class_id", referencedColumnName = "id")
+	private ClassRoom classRoom;
+	@OneToMany(mappedBy = "student")
+	private Set<Form> forms;
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "student_timetable", joinColumns = {
+			@JoinColumn(name = "student_id", referencedColumnName = "id", nullable = false) }, inverseJoinColumns = {
+					@JoinColumn(name = "timetable_id", referencedColumnName = "id", nullable = false) })
+	private Set<TimeTable> tables;
+
+	public Set<TimeTable> getTables() {
+		return tables;
+	}
+
+	public void setTables(Set<TimeTable> tables) {
+		this.tables = tables;
+	}
+
+	public Set<Form> getForms() {
+		return forms;
+	}
+
+	public void setForms(Set<Form> forms) {
+		this.forms = forms;
+	}
+
+	public ClassRoom getClassRoom() {
+		return classRoom;
+	}
+
+	public void setClassRoom(ClassRoom classRoom) {
+		this.classRoom = classRoom;
+	}
+
+	public Detail getDetail() {
+		return detail;
+	}
+
+	public void setDetail(Detail detail) {
+		this.detail = detail;
+	}
 
 	public Long getId() {
 		return id;
@@ -97,9 +148,10 @@ public class Student {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
 	public String getDetails() {
-		StringBuilder detailBuilder=new StringBuilder();
-		detailBuilder.append(this.getName()+" "+this.getAdress()+" "+this.getPhoneNumber());
+		StringBuilder detailBuilder = new StringBuilder();
+		detailBuilder.append(this.getName() + " " + this.getAdress() + " " + this.getPhoneNumber());
 		return detailBuilder.toString();
 	}
 

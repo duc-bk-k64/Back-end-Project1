@@ -114,7 +114,7 @@ public class TeacherController {
 		if (teacher == null)
 			return ResponseEntity.ok().body("Not found information");
 		teacher.setUser(null);
-		teacherService.createTeacher(teacher);
+		teacherService.createTeacher(teacher);//save change
 		return ResponseEntity.ok().body("Successfully");
 	}
 

@@ -2,6 +2,7 @@ package javaGuides.duc.Service;
 
 import java.time.Duration;
 
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -74,6 +75,21 @@ public class AccountService {
 		userRepository.save(user);
 		return "reset password successfully";
 
+	}
+	public String remove(String email) {
+		User user=userRepository.findByEmail(email);
+		if(user==null) return "Not found in system";
+		else {
+		userRepository.delete(user);
+		return "Remove account successfully";
+		}
+	}
+	public String removeRelation(String email) {
+		User user=userRepository.findByEmail(email);
+		if(user==null) return "Not found in system";
+		user.setRoles(null);
+		userRepository.save(user);
+		return "Remove relation between account and role successfully";
 	}
 
 	private Boolean isexpire(Instant timeCreation) {
