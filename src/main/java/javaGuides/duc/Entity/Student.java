@@ -150,9 +150,9 @@ public class Student {
 	}
 
 	public String getDetails() {
-		StringBuilder detailBuilder = new StringBuilder();
-		detailBuilder.append(this.getName() + " " + this.getAdress() + " " + this.getPhoneNumber());
-		return detailBuilder.toString();
+		String string = "StudentCode:" + this.getStudentCode() + " Name:" + this.getName() + " Adress:"
+				+ this.getAdress() + " PhoneNumber:" + this.getPhoneNumber();
+		return string;
 	}
 
 }

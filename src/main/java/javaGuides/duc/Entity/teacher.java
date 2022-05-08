@@ -115,9 +115,9 @@ public class teacher {
 	}
 
 	public String getDetail() {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(this.getName() + " " + this.getAdress() + " " + this.getPhoneNumber());
-		return stringBuilder.toString();
+		String string = "TeacherCode:" + this.getTeacherCode() + " Name:" + this.getName() + " Adress:"
+				+ this.getAdress() + " PhoneNumber:" + this.getPhoneNumber();
+		return string;
 	}
 
 }

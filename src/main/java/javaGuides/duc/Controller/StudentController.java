@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import javaGuides.duc.DTO.informationDTO;
+import javaGuides.duc.Entity.ClassRoom;
 import javaGuides.duc.Entity.Student;
 import javaGuides.duc.Entity.User;
 import javaGuides.duc.Exception.BadRequestException;
@@ -161,6 +162,18 @@ public class StudentController {
 		});
 		return ResponseEntity.ok().body(list);
 
+	}
+
+	@GetMapping("/classroom")
+	public ResponseEntity<String> getClassroom(@RequestParam String code) {
+		Student student = service.findStudentByStudentCode(code);
+		if (student == null)
+			return ResponseEntity.ok().body("Student not found in system");
+		ClassRoom classRoom = student.getClassRoom();
+		if (classRoom == null)
+			return ResponseEntity.ok().body("Student has'nt classroom");
+		String string = "ID:" + classRoom.getId() + " Name:" + classRoom.getName();
+		return ResponseEntity.ok().body(string);
 	}
 
 }
