@@ -176,4 +176,24 @@ public class StudentController {
 		return ResponseEntity.ok().body(string);
 	}
 
+	@GetMapping("/timetable")
+	public ResponseEntity<List<String>> getTimeTable(@RequestParam String code) {
+		Student student = service.findStudentByStudentCode(code);
+		ArrayList<String> list = new ArrayList<>();
+		if (student == null) {
+			list.add("Student not found in system");
+			return ResponseEntity.ok().body(list);
+		}
+		if (student.getTables() == null) {
+			list.add("Student has'nt timetable");
+			return ResponseEntity.ok().body(list);
+		}
+		student.getTables().forEach(timetable -> {
+			String string = "ID:" + timetable.getId() + " Detail:" + timetable.getDetail() + " Time:"
+					+ timetable.getTime();
+			list.add(string);
+		});
+		return ResponseEntity.ok().body(list);
+	}
+
 }
