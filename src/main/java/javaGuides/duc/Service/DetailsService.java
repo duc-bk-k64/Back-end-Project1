@@ -45,12 +45,15 @@ public class DetailsService {
 		}
 
 	}
+
 	public String endDetail(DetailDTO detailDTO) {
 		try {
-			Student student=studentRepository.findByStudentCode(detailDTO.getCode());
-			if(student==null) return "Student not found in system";
-			Detail detail=student.getDetail();
-			if(detail==null) return "Not found information";
+			Student student = studentRepository.findByStudentCode(detailDTO.getCode());
+			if (student == null)
+				return "Student not found in system";
+			Detail detail = student.getDetail();
+			if (detail == null)
+				return "Not found information";
 			detail.setComment(detailDTO.getComment());
 			detail.setTimeOut(Instant.now());
 			detailRepository.save(detail);
@@ -64,17 +67,17 @@ public class DetailsService {
 		return detailRepository.save(detail);
 	}
 
-	public Detail getByStudent(String code) {
-		try {
-			Student student = studentRepository.findByStudentCode(code);
-			if (student == null)
-				return null;
-			Detail detail = student.getDetail();
-			return detail;
-		} catch (Exception e) {
-			throw new ResourseNotFoundException(e.getMessage());
-		}
-	}
+//	public Detail getByStudent(String code) {
+//		try {
+//			Student student = studentRepository.findByStudentCode(code);
+//			if (student == null)
+//				return null;
+//			Detail detail = student.getDetail();
+//			return detail;
+//		} catch (Exception e) {
+//			throw new ResourseNotFoundException(e.getMessage());
+//		}
+//	}
 
 	public List<Detail> getAll() {
 		return detailRepository.findAll();
