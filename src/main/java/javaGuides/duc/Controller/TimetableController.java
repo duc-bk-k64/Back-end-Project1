@@ -1,6 +1,8 @@
 package javaGuides.duc.Controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
@@ -21,22 +23,28 @@ import javaGuides.duc.Service.TimetableService;
 @RequestMapping("/api/v1/timetable")
 public class TimetableController {
 	private TimetableService timetableService;
+
 	public TimetableController(TimetableService timetableService) {
 		this.timetableService = timetableService;
 	}
 
 	@PostMapping("/create")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> createTimeTable(@RequestBody TimetableDTO timetableDTO) {
+	public ResponseEntity<Map<String, String>> createTimeTable(@RequestBody TimetableDTO timetableDTO) {
 		String message = timetableService.createTimetable(timetableDTO);
-		return ResponseEntity.ok().body(message);
+		Map<String, String> map = new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@PutMapping("/update/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> updateTimeTable(@PathVariable Long id, @RequestBody TimetableDTO timetableDTO) {
+	public ResponseEntity<Map<String, String>> updateTimeTable(@PathVariable Long id,
+			@RequestBody TimetableDTO timetableDTO) {
 		String message = timetableService.updateTimetable(id, timetableDTO);
-		return ResponseEntity.ok().body(message);
+		Map<String, String> map = new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@GetMapping("/all")
@@ -47,8 +55,11 @@ public class TimetableController {
 	@PostMapping("/add/{id}")
 	@ApiOperation("add list student for timetable")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> addStudent(@PathVariable Long id, @RequestBody Set<String> code) {
-		return ResponseEntity.ok().body(timetableService.addStudent(code, id));
+	public ResponseEntity<Map<String, String>> addStudent(@PathVariable Long id, @RequestBody Set<String> code) {
+		String message = timetableService.addStudent(code, id);
+		Map<String, String> map = new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 }

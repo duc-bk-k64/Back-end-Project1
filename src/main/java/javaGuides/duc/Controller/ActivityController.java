@@ -2,7 +2,9 @@ package javaGuides.duc.Controller;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +20,6 @@ import io.swagger.annotations.ApiOperation;
 import javaGuides.duc.DTO.ActivityDTO;
 import javaGuides.duc.Service.ActivityService;
 
-
 @RestController
 @RequestMapping("/api/v1/activity")
 public class ActivityController {
@@ -30,39 +31,48 @@ public class ActivityController {
 
 	@PostMapping("/create")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> createActivity(@RequestParam String name, @RequestParam String detail,
+	public ResponseEntity<Map<String,String>> createActivity(@RequestParam String name, @RequestParam String detail,
 			@RequestParam Instant time) {
 		// Instant time=Instant.parse(time);
 		ActivityDTO activityDTO = new ActivityDTO(detail, name, time);
 		String message = activityService.create(activityDTO);
-		return ResponseEntity.ok().body(message);
+		Map<String,String> map=new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@PutMapping("/update/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> updateActivity(@PathVariable Long id, @RequestParam String name,
+	public ResponseEntity<Map<String,String>> updateActivity(@PathVariable Long id, @RequestParam String name,
 			@RequestParam String detail, @RequestParam Instant time) {
 		// Instant time=Instant.parse(time);
 		ActivityDTO activityDTO = new ActivityDTO(detail, name, time);
 		String message = activityService.update(id, activityDTO);
-		return ResponseEntity.ok().body(message);
+		Map<String,String> map=new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ApiOperation("add account to activity")
-	public ResponseEntity<String> add(@RequestParam Long id, @RequestParam String email) {
+	public ResponseEntity<Map<String,String>> add(@RequestParam Long id, @RequestParam String email) {
 		String message = activityService.addAccount(id, email);
-		return ResponseEntity.ok().body(message);
+		Map<String,String> map=new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@GetMapping("/all")
-	public ResponseEntity<List<String>> all() {
-		List<String> list = new ArrayList<>();
+	public ResponseEntity<List<Map<String, String>>> all() {
+		List<Map<String, String>> list = new ArrayList<>();
 		activityService.getAll().forEach(activity -> {
-			String string = "ID:" + activity.getId() + " Name:" + activity.getName() + " Detail:" + activity.getDetail()
-					+ " Time:" + activity.getTime();
-			list.add(string);
+			Map<String, String> map = new HashMap<>();
+			map.put("ID", String.valueOf(activity.getId()));
+			map.put("Name", activity.getName());
+			map.put("Detail", activity.getDetail());
+			map.put("Time", activity.getTime().toString());
+			list.add(map);
 		});
 		return ResponseEntity.ok().body(list);
 	}

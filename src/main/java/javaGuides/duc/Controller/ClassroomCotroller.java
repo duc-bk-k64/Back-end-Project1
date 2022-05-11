@@ -1,7 +1,12 @@
 package javaGuides.duc.Controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javaGuides.duc.Entity.ClassRoom;
+import javaGuides.duc.Entity.Menu;
+import javaGuides.duc.Repository.studentRepository;
 import javaGuides.duc.Service.ClassroomService;
 
 @RestController
@@ -25,36 +33,81 @@ public class ClassroomCotroller {
 
 	@PostMapping("/create")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> creaetClassroom(@RequestParam String name) {
+	public ResponseEntity<Map<String, String>> creaetClassroom(@RequestParam String name) {
 		String message = classroomService.createClassroom(name);
-		return ResponseEntity.ok().body(message);
+		Map<String, String> map = new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@PutMapping("/update/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> updateClassroom(@PathVariable Long id, @RequestParam String name) {
+	public ResponseEntity<Map<String, String>> updateClassroom(@PathVariable Long id, @RequestParam String name) {
 		String message = classroomService.updateClassroom(id, name);
-		return ResponseEntity.ok().body(message);
+		Map<String, String> map = new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@PostMapping("/addteacher/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> addTeacher(@PathVariable Long id, @RequestParam String teacherCode) {
+	public ResponseEntity<Map<String, String>> addTeacher(@PathVariable Long id, @RequestParam String teacherCode) {
 		String message = classroomService.addTeacher(id, teacherCode);
-		return ResponseEntity.ok().body(message);
+		Map<String, String> map = new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@PostMapping("/addstudent/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> addStudent(@PathVariable Long id, @RequestParam String studentCode) {
+	public ResponseEntity<Map<String, String>> addStudent(@PathVariable Long id, @RequestParam String studentCode) {
 		String message = classroomService.addStudent(id, studentCode);
-		return ResponseEntity.ok().body(message);
+		Map<String, String> map = new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@GetMapping("/infor/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<String>> getInformation(@PathVariable Long id) {
-		List<String> list = classroomService.getInformation(id);
+	public ResponseEntity<List<Map<String, String>>> getInformation(@PathVariable Long id) {
+		List<Map<String, String>> list = classroomService.getInformation(id);
+		return ResponseEntity.ok().body(list);
+	}
+
+	@GetMapping("/all")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<List<Map<String, String>>> getAll() {
+		return new ResponseEntity<List<Map<String, String>>>(classroomService.getall(), HttpStatus.OK);
+	}
+
+	@PostMapping("/addMenu/{id}")
+	public ResponseEntity<Map<String, String>> addMenu(@PathVariable Long id, @RequestParam Long menuID) {
+		String mesage = classroomService.addMenu(menuID, id);
+		Map<String, String> map = new HashMap<>();
+		map.put("Message", mesage);
+		return ResponseEntity.ok().body(map);
+	}
+
+	@PostMapping("/removeMenu/{id}")
+	public ResponseEntity<Map<String, String>> removeMenu(@PathVariable Long id, @RequestParam Long menuID) {
+		String mesage = classroomService.removeMenu(menuID, id);
+		Map<String, String> map = new HashMap<>();
+		map.put("Message", mesage);
+		return ResponseEntity.ok().body(map);
+	}
+
+	@GetMapping("/menu/{id}")
+	public ResponseEntity<List<Map<String, String>>> getMenu(@PathVariable Long id) {
+		Set<Menu> set = classroomService.getMenu(id);
+		List<Map<String, String>> list = new ArrayList<>();
+		set.forEach(menu -> {
+			Map<String, String> map = new HashMap<>();
+			map.put("ID", String.valueOf(menu.getId()));
+			map.put("Name", menu.getName());
+			map.put("Comment", menu.getComment());
+			map.put("Date", menu.getDate().toString());
+			list.add(map);
+		});
 		return ResponseEntity.ok().body(list);
 	}
 

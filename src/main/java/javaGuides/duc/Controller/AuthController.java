@@ -1,9 +1,10 @@
 package javaGuides.duc.Controller;
 
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -141,10 +142,12 @@ public class AuthController {
 	}
 
 	@PostMapping("/forgotpw")
-	public ResponseEntity<String> forgotPW(@RequestBody forgotPWdto forgot) throws Exception  {
+	public ResponseEntity<Map<String,String>> forgotPW(@RequestBody forgotPWdto forgot) throws Exception  {
 	try {
-		String respon = accountService.forgotPassword(forgot.getEmail());
-		return ResponseEntity.ok().body(respon);
+		String message = accountService.forgotPassword(forgot.getEmail());
+		Map<String,String> map=new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	} catch (Exception e) {
 		throw new Exception(e.getMessage());
 	}
@@ -152,9 +155,11 @@ public class AuthController {
 	}
 
 	@PostMapping("/resetpw")
-	public ResponseEntity<String> resetPW(@RequestBody resetPWdto reset) {
-		String respon = accountService.resetPassword(reset.getToken(), reset.getPassword());
-		return ResponseEntity.ok().body(respon);
+	public ResponseEntity<Map<String,String>> resetPW(@RequestBody resetPWdto reset) {
+		String message = accountService.resetPassword(reset.getToken(), reset.getPassword());
+		Map<String,String> map=new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 	
 }

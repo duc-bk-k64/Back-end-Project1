@@ -1,7 +1,9 @@
 package javaGuides.duc.Controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.ApiOperation;
 import javaGuides.duc.DTO.informationDTO;
 import javaGuides.duc.Entity.ClassRoom;
+import javaGuides.duc.Entity.Detail;
 import javaGuides.duc.Entity.Student;
 import javaGuides.duc.Entity.User;
 import javaGuides.duc.Exception.BadRequestException;
@@ -37,12 +40,23 @@ public class StudentController {
 	}
 
 	@GetMapping("/getByCode")
-	public ResponseEntity<String> getByCodStudent(@RequestParam String code) {
+	@ApiOperation("If Respon=0 then get MessageError, else get information")
+	public ResponseEntity<Map<String,String>> getByCodStudent(@RequestParam String code) {
 		try {
+			Map<String,String> map=new HashMap<>();
 			Student student = service.findStudentByStudentCode(code);
-			if (student == null)
-				return ResponseEntity.ok().body("Student not found in system");
-			return ResponseEntity.ok().body(student.getDetails());
+			if (student == null) {
+				map.put("Respon",String.valueOf(0));
+				map.put("MessageError","Student not found in system");
+				return ResponseEntity.ok().body(map);
+			}
+			map.put("Respon",String.valueOf(1));
+			map.put("Student_code",student.getStudentCode());
+			map.put("Adress",student.getAdress());
+			map.put("Name",student.getName());
+			map.put("ImageURL",student.getImage());
+			map.put("PhoneNumber", student.getPhoneNumber());
+			return ResponseEntity.ok().body(map);
 		} catch (Exception e) {
 			throw new BadRequestException(e.getMessage());
 		}
@@ -50,17 +64,23 @@ public class StudentController {
 
 	@GetMapping("/")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<String>> getall() {
-		List<String> list = new ArrayList<>();
+	public ResponseEntity<List<Map<String,String>>> getall() {
+		List<Map<String,String>> list = new ArrayList<>();
 		service.getAll().forEach(student -> {
-			list.add(student.getDetails());
+			Map<String,String> map=new HashMap<>();
+			map.put("Student_code",student.getStudentCode());
+			map.put("Adress",student.getAdress());
+			map.put("Name",student.getName());
+			map.put("ImageURL",student.getImage());
+			map.put("PhoneNumber", student.getPhoneNumber());
+			list.add(map);
 		});
 		return ResponseEntity.ok().body(list);
 	}
 
 	@PostMapping("/create")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> createStudent(@RequestBody informationDTO data) {
+	public ResponseEntity<Map<String,String>> createStudent(@RequestBody informationDTO data) {
 		try {
 			Student student = new Student();
 			student.setAdress(data.getAdress());
@@ -70,7 +90,9 @@ public class StudentController {
 			student.setPhoneNumber(data.getPhoneNumber());
 			student.setStudentCode(data.getCode());
 			service.createStudent(student);
-			return ResponseEntity.ok().body("create student successfully. StudentID:" + data.getCode());
+			Map<String,String> map=new HashMap<>();
+			map.put("Message","create student successfully. StudentID:" + data.getCode());
+			return ResponseEntity.ok().body(map);
 
 		} catch (Exception e) {
 			throw new BadRequestException(e.getMessage());
@@ -80,10 +102,12 @@ public class StudentController {
 
 	@PutMapping("/update")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<String> updateStudent(@RequestBody informationDTO data) {
+	public ResponseEntity<Map<String,String>> updateStudent(@RequestBody informationDTO data) {
 		try {
-			service.updateStudent(data);
-			return ResponseEntity.ok().body("update successfully");
+			String message= service.updateStudent(data);
+			Map<String,String> map=new HashMap<>();
+			map.put("Message", message);
+			return ResponseEntity.ok().body(map);
 		} catch (Exception e) {
 			throw new BadRequestException(e.getMessage());
 		}
@@ -103,45 +127,74 @@ public class StudentController {
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ApiOperation("Make relation betwwen account and student")
-	public ResponseEntity<String> add(@RequestParam String username, @RequestParam String code) {
+	public ResponseEntity<Map<String,String>> add(@RequestParam String username, @RequestParam String code) {
 		User user = accountService.findByUsername(username);
 		Student student = service.findStudentByStudentCode(code);
-		if (user == null || student == null)
-			return ResponseEntity.ok().body("Not found information");
+		Map<String,String> map=new HashMap<>();
+		if (user == null || student == null) {
+			map.put("Message","Not found information");
+			return ResponseEntity.ok().body(map);
+		}
+		
 		student.setUser(user);
 		service.createStudent(student);
-		return ResponseEntity.ok().body("successfully");
+		map.put("Message","Successfully");
+		return ResponseEntity.ok().body(map);
 
 	}
 
 	@PutMapping("/remove")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ApiOperation("Remove relation between account and student. you must call this api before call /api/v1/student/delete")
-	public ResponseEntity<String> remove(@RequestParam String code) {
+	public ResponseEntity<Map<String,String>> remove(@RequestParam String code) {
 		try {
-			return ResponseEntity.ok().body(service.removeRelation(code));
+			Map<String,String> map=new  HashMap<>();
+			map.put("Message",service.removeRelation(code));
+			return ResponseEntity.ok().body(map);
 		} catch (Exception e) {
 			throw new BadRequestException(e.getMessage());
 		}
 	}
 
 	@GetMapping("/personalInfor")
-	public ResponseEntity<String> getPersonalInformation() {
+	public ResponseEntity<Map<String,String>> getPersonalInformation() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = userDetails.getUsername();
 		User user = accountService.findByUsername(username);
-		if (user.getStudent() == null)
-			return ResponseEntity.ok().body("Not found information");
-		return ResponseEntity.ok().body(user.getStudent().getDetails());
+		Student student=user.getStudent();
+		Map<String,String> map=new HashMap<>();
+		if (student == null) {
+			map.put("Respon",String.valueOf(0));
+			map.put("MessageError","Student not found in system");
+			return ResponseEntity.ok().body(map);
+		}
+		map.put("Respon",String.valueOf(1));
+		map.put("Student_code",student.getStudentCode());
+		map.put("Adress",student.getAdress());
+		map.put("Name",student.getName());
+		map.put("ImageURL",student.getImage());
+		map.put("PhoneNumber", student.getPhoneNumber());
+		return ResponseEntity.ok().body(map);
 	}
 
 	@GetMapping("/detail")
-	public ResponseEntity<String> getDetail(@RequestParam String code) {
+	public ResponseEntity<Map<String,String>> getDetail(@RequestParam String code) {
 		try {
 			Student student = service.findStudentByStudentCode(code);
-			if (student == null)
-				return ResponseEntity.ok().body("Student not found in system");
-			return ResponseEntity.ok().body(student.getDetail().getDetail());
+			Map<String,String> map=new HashMap<>();
+			if (student == null) {
+				map.put("Respon",String.valueOf(0));
+				map.put("MessageError","Student not found in system");
+				return ResponseEntity.ok().body(map);
+			}
+			Detail detail=student.getDetail();
+			map.put("Respon",String.valueOf(1));
+			map.put("ID", String.valueOf(detail.getId()));
+			map.put("PhotoURL", detail.getPhoto());
+			map.put("Time_in", detail.getTimeIn().toString());
+			map.put("Time_out", detail.getTimeOut().toString());
+			map.put("Comment", detail.getComment());
+			return ResponseEntity.ok().body(map);
 		} catch (Exception e) {
 			throw new BadRequestException(e.getMessage());
 		}
@@ -149,31 +202,49 @@ public class StudentController {
 	}
 
 	@GetMapping("/form")
-	public ResponseEntity<List<String>> getForm(@RequestParam String code) {
-		List<String> list = new ArrayList<>();
+	public ResponseEntity<List<Map<String,String>>> getForm(@RequestParam String code) {
 		Student student = service.findStudentByStudentCode(code);
-
+        List<Map<String,String>> list=new ArrayList<>();
 		if (student == null) {
-			list.add("Student not found in system");
+			Map<String,String> map=new HashMap<>();
+			map.put("Respon",String.valueOf(0));
+			map.put("MessageError","Student not found in system");
+			list.add(map);
 			return ResponseEntity.ok().body(list);
 		}
 		student.getForms().forEach(form -> {
-			list.add(form.getDetail());
+			Map<String,String> map=new HashMap<>();
+			map.put("Respon",String.valueOf(1));
+			map.put("ID", String.valueOf(form.getId()));
+			map.put("Time", form.getTime().toString());
+			map.put("Status", form.getStatus());
+			map.put("Name", form.getName());
+			list.add(map);
+			
 		});
 		return ResponseEntity.ok().body(list);
 
 	}
 
 	@GetMapping("/classroom")
-	public ResponseEntity<String> getClassroom(@RequestParam String code) {
+	public ResponseEntity<Map<String,String>> getClassroom(@RequestParam String code) {
 		Student student = service.findStudentByStudentCode(code);
-		if (student == null)
-			return ResponseEntity.ok().body("Student not found in system");
+		Map<String,String> map=new HashMap<>();
+		if (student == null) {
+			map.put("Message","Student not found in system");
+		    map.put("Respon",String.valueOf(0));
+			return ResponseEntity.ok().body(map);
+		}
 		ClassRoom classRoom = student.getClassRoom();
-		if (classRoom == null)
-			return ResponseEntity.ok().body("Student has'nt classroom");
-		String string = "ID:" + classRoom.getId() + " Name:" + classRoom.getName();
-		return ResponseEntity.ok().body(string);
+		if (classRoom == null) {
+			map.put("Message","Student has'nt classroom");
+		    map.put("Respon",String.valueOf(0));
+			return ResponseEntity.ok().body(map);
+		}
+		map.put("Respon",String.valueOf(1));
+		map.put("ID",String.valueOf(classRoom.getId()));
+		map.put("Name",classRoom.getName());
+		return ResponseEntity.ok().body(map);
 	}
 
 	@GetMapping("/timetable")

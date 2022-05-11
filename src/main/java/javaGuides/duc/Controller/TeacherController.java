@@ -1,7 +1,9 @@
 package javaGuides.duc.Controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 
@@ -25,6 +27,7 @@ import javaGuides.duc.Entity.Student;
 import javaGuides.duc.Entity.User;
 import javaGuides.duc.Entity.teacher;
 import javaGuides.duc.Exception.BadRequestException;
+import javaGuides.duc.Repository.studentRepository;
 import javaGuides.duc.Service.AccountService;
 import javaGuides.duc.Service.teacherService;
 
@@ -42,22 +45,38 @@ public class TeacherController {
 	@GetMapping("/")
 	@ApiOperation("Get all teacher")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<String>> getAll() {
-		List<String> list = new ArrayList<>();
+	public ResponseEntity<List<Map<String, String>>> getAll() {
+		List<Map<String, String>> list = new ArrayList<>();
 		teacherService.getAll().forEach(teacher -> {
-			list.add(teacher.getDetail());
+			Map<String, String> map = new HashMap<>();
+			map.put("Teacher_code", teacher.getTeacherCode());
+			map.put("Adress", teacher.getAdress());
+			map.put("Name", teacher.getName());
+			map.put("ImageURL", teacher.getImage());
+			map.put("PhoneNumber", teacher.getPhoneNumber());
+			list.add(map);
 		});
 		return ResponseEntity.ok().body(list);
 	}
 
 	@GetMapping("/getByCode")
 	@ApiOperation("get student by teacher code")
-	public ResponseEntity<String> getBycode(@RequestParam String code) {
+	public ResponseEntity<Map<String, String>> getBycode(@RequestParam String code) {
 		try {
 			teacher teacher = teacherService.findByTeacherCode(code);
-			if (teacherService == null)
-				return ResponseEntity.ok().body("Not found in system");
-			return ResponseEntity.ok().body(teacher.getDetail());
+			Map<String, String> map = new HashMap<>();
+			if (teacherService == null) {
+				map.put("Respon", String.valueOf(0));
+				map.put("MessageError", "Tecaher not found in system");
+				return ResponseEntity.ok().body(map);
+			}
+			map.put("Respon", String.valueOf(0));
+			map.put("Teacher_code", teacher.getTeacherCode());
+			map.put("Adress", teacher.getAdress());
+			map.put("Name", teacher.getName());
+			map.put("ImageURL", teacher.getImage());
+			map.put("PhoneNumber", teacher.getPhoneNumber());
+			return ResponseEntity.ok().body(map);
 		} catch (Exception e) {
 			throw new BadRequestException(e.getMessage());
 		}
@@ -116,7 +135,7 @@ public class TeacherController {
 		if (teacher == null)
 			return ResponseEntity.ok().body("Not found information");
 		teacher.setUser(null);
-		teacherService.createTeacher(teacher);//save change
+		teacherService.createTeacher(teacher);// save change
 		return ResponseEntity.ok().body("Successfully");
 	}
 
@@ -142,6 +161,7 @@ public class TeacherController {
 			return ResponseEntity.ok().body("Not found information");
 		return ResponseEntity.ok().body(user.getTeacher().getDetail());
 	}
+
 	@GetMapping("/classroom")
 	public ResponseEntity<String> getClassroom(@RequestParam String code) {
 		teacher student = teacherService.findByTeacherCode(code);

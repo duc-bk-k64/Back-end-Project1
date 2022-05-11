@@ -1,9 +1,8 @@
 package javaGuides.duc.Controller;
-
-import java.time.Instant;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,24 +28,34 @@ public class DetailController {
 	@PostMapping("/create")
 	@PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_ADMIN')")
 	@ApiOperation("Only fill code,photo,time_in.")
-	public ResponseEntity<String> createDetail(@RequestBody DetailDTO detailDTO) {
+	public ResponseEntity<Map<String,String>> createDetail(@RequestBody DetailDTO detailDTO) {
 		String message = detailsService.createDetail(detailDTO);
-		return ResponseEntity.ok().body(message);
+		Map<String,String> map=new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@PostMapping("/end") // save comment and time out infomation
 	@PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_ADMIN')")
 	@ApiOperation("Only fill code, comment, time_out")
-	public ResponseEntity<String> endDetail(@RequestBody DetailDTO detailDTO) {
+	public ResponseEntity<Map<String,String>> endDetail(@RequestBody DetailDTO detailDTO) {
 		String message = detailsService.endDetail(detailDTO);
-		return ResponseEntity.ok().body(message);
+		Map<String,String> map=new HashMap<>();
+		map.put("Message", message);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@GetMapping("/all")
-	public ResponseEntity<List<String>> getAll() {
-		List<String> list = new ArrayList<>();
+	public ResponseEntity<List<Map<String, String>>> getAll() {
+		List<Map<String, String>> list = new ArrayList<>();
 		detailsService.getAll().forEach(detail -> {
-			list.add(detail.getDetail());
+			Map<String, String> map = new HashMap<>();
+			map.put("ID", String.valueOf(detail.getId()));
+			map.put("PhotoURL", detail.getPhoto());
+			map.put("Time_in", detail.getTimeIn().toString());
+			map.put("Time_out", detail.getTimeOut().toString());
+			map.put("Comment", detail.getComment());
+			list.add(map);
 		});
 		return ResponseEntity.ok().body(list);
 

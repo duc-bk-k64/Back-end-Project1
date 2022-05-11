@@ -56,6 +56,12 @@ public class ClassRoom {
 			@JoinColumn(name = "classroom_id", referencedColumnName = "id", nullable = false) }, inverseJoinColumns = {
 					@JoinColumn(name = "menu_id", referencedColumnName = "id", nullable = false) })
 	private Set<Menu> menus;
+	public Set<Menu> getMenus() {
+		return menus;
+	}
+	public void setMenus(Set<Menu> menus) {
+		this.menus = menus;
+	}
 	
 	
 }

@@ -1,15 +1,19 @@
 package javaGuides.duc.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import javaGuides.duc.Entity.ClassRoom;
+import javaGuides.duc.Entity.Menu;
 import javaGuides.duc.Entity.Student;
 import javaGuides.duc.Entity.teacher;
 import javaGuides.duc.Exception.BadRequestException;
 import javaGuides.duc.Exception.ResourseNotFoundException;
 import javaGuides.duc.Repository.ClassroomRepository;
+import javaGuides.duc.Repository.MenuRepository;
 import javaGuides.duc.Repository.studentRepository;
 import javaGuides.duc.Repository.teacherRepository;
 
@@ -18,12 +22,14 @@ public class ClassroomService {
 	private ClassroomRepository classroomRepository;
 	private teacherRepository teacherRepository;
 	private studentRepository studentRepository;
+	private MenuRepository menuRepository;
 
 	public ClassroomService(ClassroomRepository classroomRepository, teacherRepository teacherRepository,
-			studentRepository studentRepository) {
+			studentRepository studentRepository, MenuRepository menuRepository) {
 		this.classroomRepository = classroomRepository;
 		this.studentRepository = studentRepository;
 		this.teacherRepository = teacherRepository;
+		this.menuRepository = menuRepository;
 	}
 
 	public String createClassroom(String name) {
@@ -111,26 +117,97 @@ public class ClassroomService {
 
 	}
 
-	public List<String> getInformation(Long id) {
+	public List<Map<String, String>> getInformation(Long id) {
 		try {
-			List<String> list = new ArrayList<>();
+			List<Map<String, String>> list = new ArrayList<>();
 			ClassRoom classRoom = classroomRepository.getById(id);
 			if (classRoom == null) {
-				list.add("Classroom not found in system");
+				Map<String, String> map = new HashMap<>();
+				map.put("Message", "Classroom not found in system");
+				list.add(map);
 				return list;
 			}
-			list.add("Student information:");
+			// list.add("Student information:");
 			classRoom.getStudents().forEach(student -> {
-				list.add(student.getDetails());
+				Map<String, String> map = new HashMap<>();
+				map.put("Student_code", student.getStudentCode());
+				map.put("Adress", student.getAdress());
+				map.put("Name", student.getName());
+				map.put("ImageURL", student.getImage());
+				map.put("PhoneNumber", student.getPhoneNumber());
+				list.add(map);
 			});
-			list.add("Teacher information:");
+			// list.add("Teacher information:");
 			classRoom.getTeachers().forEach(teacher -> {
-				list.add(teacher.getDetail());
+				Map<String, String> map = new HashMap<>();
+				map.put("Teacher_code", teacher.getTeacherCode());
+				map.put("Adress", teacher.getAdress());
+				map.put("Name", teacher.getName());
+				map.put("ImageURL", teacher.getImage());
+				map.put("PhoneNumber", teacher.getPhoneNumber());
+				list.add(map);
 			});
 			return list;
 		} catch (Exception e) {
 			throw new ResourseNotFoundException(e.getMessage());
 		}
+	}
+
+	public List<Map<String, String>> getall() {
+		List<Map<String, String>> list = new ArrayList<>();
+		classroomRepository.findAll().forEach(classroom -> {
+			Map<String, String> map = new HashMap<>();
+			map.put("ID", String.valueOf(classroom.getId()));
+			map.put("Name", classroom.getName());
+			list.add(map);
+		});
+		return list;
+	}
+
+	public String addMenu(Long menuID, Long classRoomID) {
+		try {
+			Menu menu = menuRepository.getById(menuID);
+			ClassRoom classRoom = classroomRepository.getById(classRoomID);
+			if (menu == null)
+				return "Menu not found in system";
+			if (classRoom == null)
+				return "Classroom not found in system";
+			Set<Menu> set = classRoom.getMenus();
+			set.add(menu);
+			classRoom.setMenus(set);
+			classroomRepository.save(classRoom);
+			return "Successfully";
+		} catch (Exception e) {
+			throw new ResourseNotFoundException(e.getMessage());
+		}
+
+	}
+
+	public String removeMenu(Long menuID, Long classRoomID) {
+		try {
+			Menu menu = menuRepository.getById(menuID);
+			ClassRoom classRoom = classroomRepository.getById(classRoomID);
+			if (menu == null)
+				return "Menu not found in system";
+			if (classRoom == null)
+				return "Classroom not found in system";
+			Set<Menu> set = classRoom.getMenus();
+			if (set.contains(menu))
+				set.remove(menu);
+			classRoom.setMenus(set);
+			classroomRepository.save(classRoom);
+			return "Successfully";
+		} catch (Exception e) {
+			throw new ResourseNotFoundException(e.getMessage());
+		}
+
+	}
+
+	public Set<Menu> getMenu(Long id) {
+		ClassRoom classRoom = classroomRepository.getById(id);
+		if (classRoom == null)
+			return null;
+		return classRoom.getMenus();
 	}
 
 }

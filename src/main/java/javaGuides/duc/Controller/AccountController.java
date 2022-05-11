@@ -1,7 +1,9 @@
 package javaGuides.duc.Controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,27 +31,36 @@ public class AccountController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ApiOperation("delete account")
 	@PostMapping("/delete")
-	public ResponseEntity<String> delete(@RequestParam String email) {
-		return ResponseEntity.ok().body(accountService.remove(email));
+	public ResponseEntity<Map<String,String>> delete(@RequestParam String email) {
+		String string=accountService.remove(email);
+		Map<String,String> map=new HashMap<>();
+		map.put("Message", string);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ApiOperation("Remove relation between account and role. You must call this api before call /api/v1/account/delete")
 	@PostMapping("/remove")
-	public ResponseEntity<String> remove(@RequestParam String email) {
-		return ResponseEntity.ok().body(accountService.removeRelation(email));
+	public ResponseEntity<Map<String,String>> remove(@RequestParam String email) {
+		String string=accountService.removeRelation(email);
+		Map<String,String> map=new HashMap<>();
+		map.put("Message", string);
+		return ResponseEntity.ok().body(map);
 	}
 
 	@GetMapping("/activity")
-	public ResponseEntity<List<String>> activity() {
-		List<String> list = new ArrayList<>();
+	public ResponseEntity<List<Map<String, String>>> activity() {
+		List<Map<String, String>> list = new ArrayList<>();
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = userDetails.getUsername();
 		User user = accountService.findByUsername(username);
 		user.getActivities().forEach(activity -> {
-			String string = "ID:" + activity.getId() + " Name:" + activity.getName() + " Detail:" + activity.getDetail()
-					+ " Time:" + activity.getTime();
-			list.add(string);
+			Map<String, String> map = new HashMap<>();
+			map.put("ID", String.valueOf(activity.getId()));
+			map.put("Name", activity.getName());
+			map.put("Detail", activity.getDetail());
+			map.put("Time", activity.getTime().toString());
+			list.add(map);
 		});
 		return ResponseEntity.ok().body(list);
 	}
