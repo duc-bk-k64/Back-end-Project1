@@ -36,38 +36,48 @@ public class MenuController {
 		return ResponseEntity.ok().body(map);
 	}
 
-	@PutMapping("/update/{id}")
-	public ResponseEntity<Map<String, String>> updateMenu(@PathVariable Long id, @RequestBody MenuDTO menuDTO) {
+	@PutMapping("/update")
+	public ResponseEntity<Map<String, String>> updateMenu( @RequestBody MenuDTO menuDTO) {
 		Map<String, String> map = new HashMap<>();
-		String message = menuService.updateMenu(id, menuDTO);
+		String message = menuService.updateMenu(menuDTO);
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
 	}
 
-	@PostMapping("/add/{menuID}")
-	public ResponseEntity<Map<String, String>> addFood(@PathVariable Long menuID, @RequestParam Long foodID) {
+	@PostMapping("/add")
+	public ResponseEntity<Map<String, String>> addFood(@RequestParam String menuCode, @RequestParam String foodCode) {
 		Map<String, String> map = new HashMap<>();
-		String message = menuService.addFood(foodID, menuID);
+		String message = menuService.addFood(foodCode, menuCode);
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
 	}
 
-	@PostMapping("/remove/{menuID}")
-	public ResponseEntity<Map<String, String>> removeFood(@PathVariable Long menuID, @RequestParam Long foodID) {
+	@PostMapping("/remove")
+	public ResponseEntity<Map<String, String>> removeFood(@RequestParam String menuCode, @RequestParam String foodCode) {
 		Map<String, String> map = new HashMap<>();
-		String message = menuService.removeFood(foodID, menuID);
+		String message = menuService.removeFood(foodCode, menuCode);
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
 	}
 
-	@GetMapping("/get/{id}")
-	public ResponseEntity<Map<String, String>> getByID(@PathVariable Long id) {
+	@GetMapping("/get")
+	public ResponseEntity<Map<String, String>> getByCode(@RequestParam String code) {
 		Map<String, String> map = new HashMap<>();
-		Menu menu = menuService.getByID(id);
+		Menu menu = menuService.getByCode(code);
+		if(menu==null) {
+			map.put("Message","Menu not found in system");
+			return ResponseEntity.badRequest().body(map);
+		}
 		map.put("ID", String.valueOf(menu.getId()));
 		map.put("Name", menu.getName());
 		map.put("Comment", menu.getComment());
 		map.put("Date", menu.getDate().toString());
+		map.put("Code", code);
+		List<String>  list=new ArrayList<>();
+		menu.getFoods().forEach(food->{
+			list.add(food.getName());
+		});
+		map.put("Food",list.toString());
 		return ResponseEntity.ok().body(map);
 	}
 
@@ -81,6 +91,7 @@ public class MenuController {
 			map.put("Name", menu.getName());
 			map.put("Comment", menu.getComment());
 			map.put("Date", menu.getDate().toString());
+			map.put("Code",menu.getCode());
 			list.add(map);
 		});
 		return ResponseEntity.ok().body(list);

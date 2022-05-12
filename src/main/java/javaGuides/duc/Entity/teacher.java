@@ -35,6 +35,26 @@ public class teacher {
 	private String image;
 	@Column
 	private Instant dateOfBirth;
+	@Column
+	private Instant time_create;
+	@Column
+	private Instant time_update;
+	public Instant getTime_create() {
+		return time_create;
+	}
+
+	public void setTime_create(Instant time_create) {
+		this.time_create = time_create;
+	}
+
+	public Instant getTime_update() {
+		return time_update;
+	}
+
+	public void setTime_update(Instant time_update) {
+		this.time_update = time_update;
+	}
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "account_id", referencedColumnName = "id")
 	private User user;

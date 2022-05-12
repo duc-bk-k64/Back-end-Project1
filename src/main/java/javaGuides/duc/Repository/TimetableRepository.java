@@ -7,5 +7,5 @@ import javaGuides.duc.Entity.TimeTable;
 
 @Repository
 public interface TimetableRepository extends JpaRepository<TimeTable, Long> {
-
+   TimeTable findByCode(String code);
 }

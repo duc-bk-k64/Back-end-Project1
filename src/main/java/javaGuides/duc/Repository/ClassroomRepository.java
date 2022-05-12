@@ -7,5 +7,5 @@ import javaGuides.duc.Entity.ClassRoom;
 
 @Repository
 public interface ClassroomRepository extends JpaRepository<ClassRoom, Long> {
-
+	ClassRoom findByName(String name);
 }

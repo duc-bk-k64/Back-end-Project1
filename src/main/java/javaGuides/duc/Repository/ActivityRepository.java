@@ -7,5 +7,6 @@ import javaGuides.duc.Entity.Activity;
 
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity,Long>{
+	Activity findByCode(String code);
 
 }

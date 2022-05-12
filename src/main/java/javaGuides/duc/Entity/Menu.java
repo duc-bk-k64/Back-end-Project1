@@ -27,6 +27,36 @@ public class Menu {
 	private String name;
 	@Column
 	private Instant date;
+	@Column
+	private Instant time_create;
+	@Column
+	private Instant time_update;
+	@Column 
+	private String code;
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public Instant getTime_create() {
+		return time_create;
+	}
+
+	public void setTime_create(Instant time_create) {
+		this.time_create = time_create;
+	}
+
+	public Instant getTime_update() {
+		return time_update;
+	}
+
+	public void setTime_update(Instant time_update) {
+		this.time_update = time_update;
+	}
+
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "menu_food", joinColumns = {
 			@JoinColumn(name = "menu_id", referencedColumnName = "id", nullable = false) }, inverseJoinColumns = {

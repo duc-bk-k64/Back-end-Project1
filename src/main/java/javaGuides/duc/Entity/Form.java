@@ -25,6 +25,22 @@ public class Form {
 	private String status;
 	@Column
 	private Instant time;
+	@Column
+	private Instant time_create;
+	@Column
+	private String code;
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public Instant getTime_create() {
+		return time_create;
+	}
+	public void setTime_create(Instant time_create) {
+		this.time_create = time_create;
+	}
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "student_id",referencedColumnName = "id")
 	private Student student;

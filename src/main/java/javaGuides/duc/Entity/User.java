@@ -36,6 +36,16 @@ public class User {
 	private String tokenForgotPassword;
 	@Column
 	private Instant timeCreation;
+	@Column
+	private Instant time_create_user;
+
+	public Instant getTime_create_user() {
+		return time_create_user;
+	}
+
+	public void setTime_create_user(Instant time_create_user) {
+		this.time_create_user = time_create_user;
+	}
 
 	public Instant getTimeCreation() {
 		return timeCreation;

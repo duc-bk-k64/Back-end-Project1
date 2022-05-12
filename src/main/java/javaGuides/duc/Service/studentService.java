@@ -1,5 +1,6 @@
 package javaGuides.duc.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -57,6 +58,7 @@ public class studentService {
 			student.setImage(data.getImage());
 			student.setPhoneNumber(data.getPhoneNumber());
 			student.setName(data.getName());
+			student.setTime_update(Instant.now());
 			studentRepository.save(student);
 			return "Update student information successfully";
 		} catch (Exception e) {

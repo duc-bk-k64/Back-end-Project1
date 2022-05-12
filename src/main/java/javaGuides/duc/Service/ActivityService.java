@@ -1,5 +1,6 @@
 package javaGuides.duc.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -24,10 +25,14 @@ public class ActivityService {
 
 	public String create(ActivityDTO activityDTO) {
 		try {
-			Activity activity = new Activity();
+			Activity activity = activityRepository.findByCode(activityDTO.getCode());
+			if(activity!=null) return "Activity "+activityDTO.getCode()+" already exist in system";
+			activity=new Activity();
 			activity.setDetail(activityDTO.getDetail());
 			activity.setName(activityDTO.getName());
 			activity.setTime(activityDTO.getTime());
+			activity.setTime_create(Instant.now());
+			activity.setCode(activityDTO.getCode());
 			activityRepository.save(activity);
 			return "Create activity successfully";
 		} catch (Exception e) {
@@ -40,13 +45,14 @@ public class ActivityService {
 		return activityRepository.findAll();
 
 	}
-	public String update(Long id,ActivityDTO activityDTO) {
+	public String update(ActivityDTO activityDTO) {
 		try {
-			Activity activity=activityRepository.getById(id);
+			Activity activity=activityRepository.findByCode(activityDTO.getCode());
 			if(activity==null) return "Activity not found in system";
 			activity.setDetail(activityDTO.getDetail());
 			activity.setName(activityDTO.getName());
 			activity.setTime(activityDTO.getTime());
+			activity.setTime_update(Instant.now());
 			activityRepository.save(activity);
 			return "Update activity successfully";
 			
@@ -54,9 +60,9 @@ public class ActivityService {
 			throw new BadRequestException(e.getMessage());
 		}
 	}
-	public String addAccount(Long activityId,String email) {
+	public String addAccount(String code,String email) {
 		try {
-			Activity activity=activityRepository.getById(activityId);
+			Activity activity=activityRepository.findByCode(code);
 			User user=userRepository.findByEmail(email);
 			if(activity==null) return "Activity not found in system";
 			if(user==null) return "User not found in system";

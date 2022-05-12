@@ -1,5 +1,6 @@
 package javaGuides.duc.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -56,6 +57,7 @@ public class teacherService {
 			oldTeacher.setImage(data.getImage());
 			oldTeacher.setName(data.getName());
 			oldTeacher.setPhoneNumber(data.getPhoneNumber());
+			oldTeacher.setTime_update(Instant.now());
 			teacherRepository.save(oldTeacher);
 			return "Update teacher information successfully";
 

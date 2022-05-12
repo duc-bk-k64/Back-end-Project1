@@ -4,6 +4,13 @@ public class FoodDTO {
 	private int calo;
 	private String element;
 	private String name;
+	 private String code;
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
 	public int getCalo() {
 		return calo;
 	}

@@ -25,17 +25,17 @@ public class DetailsService {
 
 	public String createDetail(DetailDTO detailDTO) {
 		try {
-			// System.out.println("Data:"+detailDTO.getComment()+" "+detailDTO.getPhoto());
 			Student student = studentRepository.findByStudentCode(detailDTO.getCode());
 			if (student == null)
 				return "Student not found in system";
 			Detail detail = student.getDetail();
 			if (detail == null)
 				detail = new Detail();
-			detail.setComment(detailDTO.getComment());
 			detail.setPhoto(detailDTO.getPhoto());
-			detail.setTimeIn(detailDTO.getTime_in());
-			detail.setTimeOut(detailDTO.getTime_out());
+			detail.setTimeIn(Instant.now());
+			detail.setCode(detailDTO.getDetailCode());
+			detail.setTimeOut(null);
+			detail.setComment(null);
 			student.setDetail(detail);
 			detailRepository.save(detail);
 			studentRepository.save(student);
@@ -66,18 +66,6 @@ public class DetailsService {
 	public Detail save(Detail detail) {
 		return detailRepository.save(detail);
 	}
-
-//	public Detail getByStudent(String code) {
-//		try {
-//			Student student = studentRepository.findByStudentCode(code);
-//			if (student == null)
-//				return null;
-//			Detail detail = student.getDetail();
-//			return detail;
-//		} catch (Exception e) {
-//			throw new ResourseNotFoundException(e.getMessage());
-//		}
-//	}
 
 	public List<Detail> getAll() {
 		return detailRepository.findAll();

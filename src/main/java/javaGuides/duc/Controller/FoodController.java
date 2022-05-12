@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javaGuides.duc.DTO.FoodDTO;
@@ -38,26 +39,28 @@ public class FoodController {
 		return ResponseEntity.ok().body(map);
 	}
 
-	@PutMapping("/update/{id}")
+	@PutMapping("/update")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Map<String,String>> updateFood(@PathVariable Long id, @RequestBody FoodDTO foodDTO) {
-		String message = foodService.updateFood(id, foodDTO);
+	public ResponseEntity<Map<String,String>> updateFood( @RequestBody FoodDTO foodDTO) {
+		String message = foodService.updateFood(foodDTO);
 		Map<String,String> map=new HashMap<>();
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
 	}
 
-	@GetMapping("/get/{id}")
-//	@ResponseBody
-	public ResponseEntity<Map<String, String>> getByID(@PathVariable Long id) {
-//		String message = foodService.getById(id);
-//		return new ResponseEntity<String>(message, HttpStatus.OK);
-		Food food = foodService.getFood(id);
+	@GetMapping("/get")
+	public ResponseEntity<Map<String, String>> getByID(@RequestParam String code) {
+		Food food = foodService.getFood(code);
 		Map<String, String> map = new HashMap<>();
+		if(food==null) {
+			map.put("Message","Food not found in system");
+			return ResponseEntity.badRequest().body(map);
+		}
 		map.put("ID", String.valueOf(food.getId()));
 		map.put("Name", food.getName());
 		map.put("Element", food.getElement());
 		map.put("Calo:", String.valueOf(food.getCalo()));
+		map.put("Code",food.getCode());
 		return ResponseEntity.ok().body(map);
 
 	}
@@ -70,6 +73,7 @@ public class FoodController {
 			map.put("ID", String.valueOf(food.getId()));
 			map.put("Name", food.getName());
 			map.put("Element", food.getElement());
+			map.put("Code",food.getCode());
 			map.put("Calo:", String.valueOf(food.getCalo()));
 			list.add(map);
 		});

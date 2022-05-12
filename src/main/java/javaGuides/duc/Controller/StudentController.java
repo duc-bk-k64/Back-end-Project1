@@ -1,5 +1,6 @@
 package javaGuides.duc.Controller;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +90,7 @@ public class StudentController {
 			student.setName(data.getName());
 			student.setPhoneNumber(data.getPhoneNumber());
 			student.setStudentCode(data.getCode());
+			student.setTime_create(Instant.now());
 			service.createStudent(student);
 			Map<String,String> map=new HashMap<>();
 			map.put("Message","create student successfully. StudentID:" + data.getCode());
@@ -164,11 +166,11 @@ public class StudentController {
 		Student student=user.getStudent();
 		Map<String,String> map=new HashMap<>();
 		if (student == null) {
-			map.put("Respon",String.valueOf(0));
+			//map.put("Respon",String.valueOf(0));
 			map.put("MessageError","Student not found in system");
-			return ResponseEntity.ok().body(map);
+			return ResponseEntity.badRequest().body(map);
 		}
-		map.put("Respon",String.valueOf(1));
+		//map.put("Respon",String.valueOf(1));
 		map.put("Student_code",student.getStudentCode());
 		map.put("Adress",student.getAdress());
 		map.put("Name",student.getName());
@@ -183,17 +185,18 @@ public class StudentController {
 			Student student = service.findStudentByStudentCode(code);
 			Map<String,String> map=new HashMap<>();
 			if (student == null) {
-				map.put("Respon",String.valueOf(0));
+			//	map.put("Respon",String.valueOf(0));
 				map.put("MessageError","Student not found in system");
-				return ResponseEntity.ok().body(map);
+				return ResponseEntity.badRequest().body(map);
 			}
 			Detail detail=student.getDetail();
-			map.put("Respon",String.valueOf(1));
+			//map.put("Respon",String.valueOf(1));
 			map.put("ID", String.valueOf(detail.getId()));
 			map.put("PhotoURL", detail.getPhoto());
 			map.put("Time_in", detail.getTimeIn().toString());
 			map.put("Time_out", detail.getTimeOut().toString());
 			map.put("Comment", detail.getComment());
+			map.put("Code",detail.getCode());
 			return ResponseEntity.ok().body(map);
 		} catch (Exception e) {
 			throw new BadRequestException(e.getMessage());
@@ -207,18 +210,19 @@ public class StudentController {
         List<Map<String,String>> list=new ArrayList<>();
 		if (student == null) {
 			Map<String,String> map=new HashMap<>();
-			map.put("Respon",String.valueOf(0));
+			//map.put("Respon",String.valueOf(0));
 			map.put("MessageError","Student not found in system");
 			list.add(map);
-			return ResponseEntity.ok().body(list);
+			return ResponseEntity.badRequest().body(list);
 		}
 		student.getForms().forEach(form -> {
 			Map<String,String> map=new HashMap<>();
-			map.put("Respon",String.valueOf(1));
+			//map.put("Respon",String.valueOf(1));
 			map.put("ID", String.valueOf(form.getId()));
 			map.put("Time", form.getTime().toString());
 			map.put("Status", form.getStatus());
 			map.put("Name", form.getName());
+			map.put("Code",form.getCode());
 			list.add(map);
 			
 		});
@@ -232,16 +236,16 @@ public class StudentController {
 		Map<String,String> map=new HashMap<>();
 		if (student == null) {
 			map.put("Message","Student not found in system");
-		    map.put("Respon",String.valueOf(0));
-			return ResponseEntity.ok().body(map);
+		   // map.put("Respon",String.valueOf(0));
+			return ResponseEntity.badRequest().body(map);
 		}
 		ClassRoom classRoom = student.getClassRoom();
 		if (classRoom == null) {
 			map.put("Message","Student has'nt classroom");
-		    map.put("Respon",String.valueOf(0));
-			return ResponseEntity.ok().body(map);
+		  //  map.put("Respon",String.valueOf(0));
+			return ResponseEntity.badRequest().body(map);
 		}
-		map.put("Respon",String.valueOf(1));
+		//map.put("Respon",String.valueOf(1));
 		map.put("ID",String.valueOf(classRoom.getId()));
 		map.put("Name",classRoom.getName());
 		return ResponseEntity.ok().body(map);

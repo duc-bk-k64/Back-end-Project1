@@ -1,6 +1,4 @@
 package javaGuides.duc.Controller;
-
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,9 +7,9 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,23 +29,18 @@ public class ActivityController {
 
 	@PostMapping("/create")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Map<String,String>> createActivity(@RequestParam String name, @RequestParam String detail,
-			@RequestParam Instant time) {
+	public ResponseEntity<Map<String,String>> createActivity(@RequestBody ActivityDTO activityDTO) {
 		// Instant time=Instant.parse(time);
-		ActivityDTO activityDTO = new ActivityDTO(detail, name, time);
 		String message = activityService.create(activityDTO);
 		Map<String,String> map=new HashMap<>();
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
 	}
 
-	@PutMapping("/update/{id}")
+	@PutMapping("/update")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Map<String,String>> updateActivity(@PathVariable Long id, @RequestParam String name,
-			@RequestParam String detail, @RequestParam Instant time) {
-		// Instant time=Instant.parse(time);
-		ActivityDTO activityDTO = new ActivityDTO(detail, name, time);
-		String message = activityService.update(id, activityDTO);
+	public ResponseEntity<Map<String,String>> updateActivity(@RequestBody ActivityDTO activityDTO) {
+		String message = activityService.update(activityDTO);
 		Map<String,String> map=new HashMap<>();
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
@@ -56,8 +49,8 @@ public class ActivityController {
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ApiOperation("add account to activity")
-	public ResponseEntity<Map<String,String>> add(@RequestParam Long id, @RequestParam String email) {
-		String message = activityService.addAccount(id, email);
+	public ResponseEntity<Map<String,String>> add(@RequestParam String code, @RequestParam String email) {
+		String message = activityService.addAccount(code, email);
 		Map<String,String> map=new HashMap<>();
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
@@ -72,6 +65,7 @@ public class ActivityController {
 			map.put("Name", activity.getName());
 			map.put("Detail", activity.getDetail());
 			map.put("Time", activity.getTime().toString());
+			map.put("Code",activity.getCode());
 			list.add(map);
 		});
 		return ResponseEntity.ok().body(list);

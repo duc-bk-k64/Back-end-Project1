@@ -1,5 +1,6 @@
 package javaGuides.duc.Controller;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,6 +97,7 @@ public class TeacherController {
 			teacher.setName(data.getName());
 			teacher.setPhoneNumber(data.getPhoneNumber());
 			teacher.setTeacherCode(data.getCode());
+			teacher.setTime_create(Instant.now());
 			teacherService.createTeacher(teacher);
 			return ResponseEntity.ok().body("create teacher successfully");
 		} catch (Exception e) {

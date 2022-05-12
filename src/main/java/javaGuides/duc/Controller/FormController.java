@@ -43,6 +43,8 @@ public class FormController {
 			map.put("Time", form.getTime().toString());
 			map.put("Status", form.getStatus());
 			map.put("Name", form.getName());
+			map.put("Code",form.getCode());
+			map.put("Code",form.getCode());
 			list.add(map);
 		});
 		return ResponseEntity.ok().body(list);

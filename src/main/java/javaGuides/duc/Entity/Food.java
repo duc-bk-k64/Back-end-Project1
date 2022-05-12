@@ -1,5 +1,6 @@
 package javaGuides.duc.Entity;
 
+import java.time.Instant;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -22,6 +23,30 @@ public class Food {
 	private String element;
 	@Column
 	private String name;
+	@Column
+	private Instant time_create;
+	@Column
+	private Instant time_update;
+	@Column 
+	private String code;
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public Instant getTime_create() {
+		return time_create;
+	}
+	public void setTime_create(Instant time_create) {
+		this.time_create = time_create;
+	}
+	public Instant getTime_update() {
+		return time_update;
+	}
+	public void setTime_update(Instant time_update) {
+		this.time_update = time_update;
+	}
 	@ManyToMany(mappedBy = "foods")
 	private Set<Menu> menus;
 	public long getId() {

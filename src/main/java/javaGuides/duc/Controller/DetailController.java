@@ -55,6 +55,7 @@ public class DetailController {
 			map.put("Time_in", detail.getTimeIn().toString());
 			map.put("Time_out", detail.getTimeOut().toString());
 			map.put("Comment", detail.getComment());
+			map.put("Code",detail.getCode());
 			list.add(map);
 		});
 		return ResponseEntity.ok().body(list);

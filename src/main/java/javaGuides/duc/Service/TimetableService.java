@@ -1,5 +1,6 @@
 package javaGuides.duc.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,9 +27,13 @@ public class TimetableService {
 
 	public String createTimetable(TimetableDTO timetableDTO) {
 		try {
-			TimeTable table = new TimeTable();
+			TimeTable table = timetableRepository.findByCode(timetableDTO.getCode());
+			if(table!=null) return "Timetable "+timetableDTO.getCode()+" already exist";
+			table=new TimeTable();
 			table.setDetail(timetableDTO.getDetail());
 			table.setTime(timetableDTO.getTime());
+			table.setTime_create(Instant.now());
+			table.setCode(timetableDTO.getCode());
 			timetableRepository.save(table);
 			return "Successfully";
 		} catch (Exception e) {
@@ -40,13 +45,14 @@ public class TimetableService {
 		timetableRepository.save(table);
 	}
 
-	public String updateTimetable(Long id, TimetableDTO timetableDTO) {
+	public String updateTimetable( TimetableDTO timetableDTO) {
 		try {
-			TimeTable table = timetableRepository.getById(id);
+			TimeTable table = timetableRepository.findByCode(timetableDTO.getCode());
 			if (table == null)
 				return "Timetable not found in system";
 			table.setDetail(timetableDTO.getDetail());
 			table.setTime(timetableDTO.getTime());
+			table.setTime_update(Instant.now());
 			timetableRepository.save(table);
 			return "Successfully";
 		} catch (Exception e) {
@@ -69,9 +75,9 @@ public class TimetableService {
 		}
 	}
 
-	public String addStudent(Set<String> code, Long id) {
+	public String addStudent(Set<String> code, String codeTimetable) {
 		try {
-			TimeTable table = timetableRepository.getById(id);
+			TimeTable table = timetableRepository.findByCode(codeTimetable);
 			ArrayList<String> error = new ArrayList<>();
 			if (table == null) {
 				return "Timetable not found in system";

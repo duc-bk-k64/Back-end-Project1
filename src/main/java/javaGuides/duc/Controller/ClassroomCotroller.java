@@ -40,37 +40,37 @@ public class ClassroomCotroller {
 		return ResponseEntity.ok().body(map);
 	}
 
-	@PutMapping("/update/{id}")
+	@PutMapping("/update")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Map<String, String>> updateClassroom(@PathVariable Long id, @RequestParam String name) {
-		String message = classroomService.updateClassroom(id, name);
+	public ResponseEntity<Map<String, String>> updateClassroom(@RequestParam String oldName, @RequestParam String name) {
+		String message = classroomService.updateClassroom(oldName, name);
 		Map<String, String> map = new HashMap<>();
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
 	}
 
-	@PostMapping("/addteacher/{id}")
+	@PostMapping("/addteacher")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Map<String, String>> addTeacher(@PathVariable Long id, @RequestParam String teacherCode) {
-		String message = classroomService.addTeacher(id, teacherCode);
+	public ResponseEntity<Map<String, String>> addTeacher(@RequestParam String name, @RequestParam String teacherCode) {
+		String message = classroomService.addTeacher(name, teacherCode);
 		Map<String, String> map = new HashMap<>();
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
 	}
 
-	@PostMapping("/addstudent/{id}")
+	@PostMapping("/addstudent")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Map<String, String>> addStudent(@PathVariable Long id, @RequestParam String studentCode) {
-		String message = classroomService.addStudent(id, studentCode);
+	public ResponseEntity<Map<String, String>> addStudent(@RequestParam String name, @RequestParam String studentCode) {
+		String message = classroomService.addStudent(name, studentCode);
 		Map<String, String> map = new HashMap<>();
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
 	}
 
-	@GetMapping("/infor/{id}")
+	@GetMapping("/infor")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<Map<String, String>>> getInformation(@PathVariable Long id) {
-		List<Map<String, String>> list = classroomService.getInformation(id);
+	public ResponseEntity<List<Map<String, String>>> getInformation(@RequestParam String name) {
+		List<Map<String, String>> list = classroomService.getInformation(name);
 		return ResponseEntity.ok().body(list);
 	}
 

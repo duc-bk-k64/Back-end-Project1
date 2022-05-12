@@ -1,5 +1,6 @@
 package javaGuides.duc.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +32,8 @@ public class FormService {
 			form.setStatus(data.getStatus());
 			form.setTime(data.getTime());
 			form.setStudent(student);
+			form.setTime_create(Instant.now());
+			form.setCode(data.getFormCode());
 			formRepository.save(form);
 			return "Submit form successfully";
 		} catch (Exception e) {

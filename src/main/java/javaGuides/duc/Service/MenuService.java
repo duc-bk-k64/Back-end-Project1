@@ -1,5 +1,6 @@
 package javaGuides.duc.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -24,10 +25,14 @@ public class MenuService {
 
 	public String createMenu(MenuDTO menuDTO) {
 		try {
-			Menu menu = new Menu();
+			Menu menu = menuRepository.findByCode(menuDTO.getCode());
+			if(menu!=null) return "Menu "+menuDTO.getCode()+" already exist";
+			menu=new Menu();
 			menu.setComment(menuDTO.getComment());
 			menu.setDate(menuDTO.getDate());
 			menu.setName(menuDTO.getName());
+			menu.setTime_create(Instant.now());
+			menu.setCode(menuDTO.getCode());
 			menuRepository.save(menu);
 			return "Successfully";
 		} catch (Exception e) {
@@ -35,14 +40,15 @@ public class MenuService {
 		}
 	}
 
-	public String updateMenu(Long id, MenuDTO menuDTO) {
+	public String updateMenu( MenuDTO menuDTO) {
 		try {
-			Menu menu = menuRepository.getById(id);
+			Menu menu = menuRepository.findByCode(menuDTO.getCode());
 			if (menu == null)
 				return "Menu not found in system";
 			menu.setComment(menuDTO.getComment());
 			menu.setDate(menuDTO.getDate());
 			menu.setName(menuDTO.getName());
+			menu.setTime_update(Instant.now());
 			menuRepository.save(menu);
 			return "Successfully";
 		} catch (Exception e) {
@@ -50,17 +56,17 @@ public class MenuService {
 		}
 	}
 
-	public Menu getByID(Long id) {
-		return menuRepository.getById(id);
+	public Menu getByCode(String code) {
+		return menuRepository.findByCode(code);
 	}
 
 	public List<Menu> getALL() {
 		return menuRepository.findAll();
 	}
 
-	public String addFood(Long foodID, Long menuID) {
-		Food food = foodRepository.getById(foodID);
-		Menu menu = menuRepository.getById(menuID);
+	public String addFood(String foodCode,String menuCode) {
+		Food food = foodRepository.findByCode(foodCode);
+		Menu menu = menuRepository.findByCode(menuCode);
 		if (food == null)
 			return "Food not found in system";
 		if (menu == null)
@@ -72,9 +78,9 @@ public class MenuService {
 		return "Successfully";
 	}
 
-	public String removeFood(Long foodID, Long menuID) {
-		Food food = foodRepository.getById(foodID);
-		Menu menu = menuRepository.getById(menuID);
+	public String removeFood(String foodCode,String menuCode) {
+		Food food = foodRepository.findByCode(foodCode);
+		Menu menu = menuRepository.findByCode(menuCode);
 		if (food == null)
 			return "Food not found in system";
 		if (menu == null)

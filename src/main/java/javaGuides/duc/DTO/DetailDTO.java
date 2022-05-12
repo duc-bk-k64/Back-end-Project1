@@ -8,6 +8,15 @@ public class DetailDTO {
 	private Instant time_in;
 	private Instant time_out;
 	private String code;
+	private String detailCode;
+
+	public String getDetailCode() {
+		return detailCode;
+	}
+
+	public void setDetailCode(String detailCode) {
+		this.detailCode = detailCode;
+	}
 
 	public String getComment() {
 		return comment;

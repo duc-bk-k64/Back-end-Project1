@@ -7,5 +7,5 @@ import javaGuides.duc.Entity.Detail;
 
 @Repository
 public interface DetailRepository extends JpaRepository<Detail,Long> {
-
+  Detail findByCode(String code);
 }

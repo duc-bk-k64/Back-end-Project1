@@ -7,5 +7,6 @@ import javaGuides.duc.Entity.Form;
 
 @Repository
 public interface FormRepository extends JpaRepository<Form,Long> {
+	Form findByCode(String code);
 
 }

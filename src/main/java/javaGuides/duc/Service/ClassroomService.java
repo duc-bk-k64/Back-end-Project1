@@ -1,5 +1,6 @@
 package javaGuides.duc.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +34,11 @@ public class ClassroomService {
 	}
 
 	public String createClassroom(String name) {
-		ClassRoom classRoom = new ClassRoom();
+		ClassRoom classRoom = classroomRepository.findByName(name);
+		if(classRoom!=null) return "Classroom "+name+" already exist";
+		classRoom=new ClassRoom();
 		classRoom.setName(name);
+		classRoom.setTime_create(Instant.now());
 		classroomRepository.save(classRoom);
 		return "Successfully";
 	}
@@ -43,12 +47,13 @@ public class ClassroomService {
 		classroomRepository.save(classRoom);
 	}
 
-	public String updateClassroom(Long id, String name) {
+	public String updateClassroom(String oldName, String name) {
 		try {
-			ClassRoom classRoom = classroomRepository.getById(id);
+			ClassRoom classRoom = classroomRepository.findByName(oldName);
 			if (classRoom == null)
 				return "Classroom not found in system";
 			classRoom.setName(name);
+			classRoom.setTime_update(Instant.now());
 			classroomRepository.save(classRoom);
 			return "Successfully";
 		} catch (Exception e) {
@@ -60,9 +65,9 @@ public class ClassroomService {
 		return classroomRepository.findAll();
 	}
 
-	public Set<Student> getStudent(Long id) {
+	public Set<Student> getStudent(String name) {
 		try {
-			ClassRoom classRoom = classroomRepository.getById(id);
+			ClassRoom classRoom = classroomRepository.findByName(name);
 			if (classRoom == null)
 				return null;
 			return classRoom.getStudents();
@@ -72,9 +77,9 @@ public class ClassroomService {
 		}
 	}
 
-	public Set<teacher> getTeacher(Long id) {
+	public Set<teacher> getTeacher(String name) {
 		try {
-			ClassRoom classRoom = classroomRepository.getById(id);
+			ClassRoom classRoom = classroomRepository.findByName(name);
 			if (classRoom == null)
 				return null;
 			return classRoom.getTeachers();
@@ -83,9 +88,9 @@ public class ClassroomService {
 		}
 	}
 
-	public String addStudent(Long ClassroomID, String StudentCode) {
+	public String addStudent(String name, String StudentCode) {
 		try {
-			ClassRoom classRoom = classroomRepository.getById(ClassroomID);
+			ClassRoom classRoom = classroomRepository.findByName(name);
 			Student student = studentRepository.findByStudentCode(StudentCode);
 			if (classRoom == null)
 				return "Classroom not found in system";
@@ -100,9 +105,9 @@ public class ClassroomService {
 
 	}
 
-	public String addTeacher(Long ClassroomID, String teacherCode) {
+	public String addTeacher(String name, String teacherCode) {
 		try {
-			ClassRoom classRoom = classroomRepository.getById(ClassroomID);
+			ClassRoom classRoom = classroomRepository.findByName(name);
 			teacher teacher = teacherRepository.findByTeacherCode(teacherCode);
 			if (classRoom == null)
 				return "Classroom not found in system";
@@ -117,10 +122,10 @@ public class ClassroomService {
 
 	}
 
-	public List<Map<String, String>> getInformation(Long id) {
+	public List<Map<String, String>> getInformation(String name) {
 		try {
 			List<Map<String, String>> list = new ArrayList<>();
-			ClassRoom classRoom = classroomRepository.getById(id);
+			ClassRoom classRoom = classroomRepository.findByName(name);
 			if (classRoom == null) {
 				Map<String, String> map = new HashMap<>();
 				map.put("Message", "Classroom not found in system");

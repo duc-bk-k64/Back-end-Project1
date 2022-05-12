@@ -1,4 +1,5 @@
 package javaGuides.duc.Service;
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -23,10 +24,14 @@ public class FoodService {
 
 	public String createFood(FoodDTO foodDTO) {
 		try {
-			Food food = new Food();
+			Food food = foodRepository.findByCode(foodDTO.getCode());
+			if(food!=null) return "Food "+foodDTO.getCode()+" already exist";
+			food=new Food();
 			food.setCalo(foodDTO.getCalo());
 			food.setElement(foodDTO.getElement());
 			food.setName(foodDTO.getName());
+			food.setTime_create(Instant.now());
+			food.setCode(foodDTO.getCode());
 			foodRepository.save(food);
 			return "Successfully";
 		} catch (Exception e) {
@@ -35,14 +40,15 @@ public class FoodService {
 
 	}
 
-	public String updateFood(Long id, FoodDTO foodDTO) {
+	public String updateFood(FoodDTO foodDTO) {
 		try {
-			Food food = foodRepository.getById(id);
+			Food food = foodRepository.findByCode(foodDTO.getCode());
 			if (food == null)
 				return "Food not found in system";
 			food.setCalo(foodDTO.getCalo());
 			food.setElement(foodDTO.getElement());
 			food.setName(foodDTO.getName());
+			food.setTime_update(Instant.now());
 			foodRepository.save(food);
 			return "Successfully";
 
@@ -57,9 +63,9 @@ public class FoodService {
 
 	}
 
-	public Food getFood(Long id) {
+	public Food getFood(String code) {
 		try {
-			Food food = foodRepository.getById(id);
+			Food food = foodRepository.findByCode(code);
 			return food;
 		} catch (Exception e) {
 			throw new ResourseNotFoundException(e.getMessage());

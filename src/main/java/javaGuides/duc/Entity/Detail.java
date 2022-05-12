@@ -26,6 +26,14 @@ public class Detail {
 	private Instant timeIn;
 	@Column
 	private Instant timeOut;
+	@Column
+	private String code;
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
 	@OneToOne(mappedBy = "detail", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Student student;
 	public long getId() {

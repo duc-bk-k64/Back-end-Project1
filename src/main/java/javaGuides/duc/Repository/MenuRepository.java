@@ -9,4 +9,5 @@ import javaGuides.duc.Entity.Menu;
 
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
+	Menu findByCode(String code);
 }

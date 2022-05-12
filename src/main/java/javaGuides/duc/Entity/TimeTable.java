@@ -21,6 +21,30 @@ public class TimeTable {
 	private Instant time;
 	@Column
 	private String detail;
+	@Column
+	private Instant time_create;
+	@Column
+	private Instant time_update;
+	@Column
+	private String code;
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public Instant getTime_create() {
+		return time_create;
+	}
+	public void setTime_create(Instant time_create) {
+		this.time_create = time_create;
+	}
+	public Instant getTime_update() {
+		return time_update;
+	}
+	public void setTime_update(Instant time_update) {
+		this.time_update = time_update;
+	}
 	@ManyToMany(mappedBy = "tables")
 	private Set<Student> students;
 	public Long getId() {

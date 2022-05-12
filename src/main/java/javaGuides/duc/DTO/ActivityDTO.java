@@ -6,6 +6,16 @@ public class ActivityDTO {
 	private String detail;
 	private String name;
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	private String code;
+
 	public String getDetail() {
 		return detail;
 	}
@@ -32,9 +42,4 @@ public class ActivityDTO {
 
 	private Instant time;
 
-	public ActivityDTO(String detail, String name, Instant time) {
-		this.detail = detail;
-		this.name = name;
-		this.time = time;
-	}
 }

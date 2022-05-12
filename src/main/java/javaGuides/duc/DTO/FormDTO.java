@@ -7,6 +7,15 @@ public class FormDTO {
 	private String status;
 	private Instant time;
 	private String code;
+	 private String formCode;
+
+	public String getFormCode() {
+		return formCode;
+	}
+
+	public void setFormCode(String formCode) {
+		this.formCode = formCode;
+	}
 
 	public String getName() {
 		return name;
