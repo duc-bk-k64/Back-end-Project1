@@ -6,8 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +32,7 @@ import javaGuides.duc.Exception.BadRequestException;
 import javaGuides.duc.Exception.ResourseNotFoundException;
 import javaGuides.duc.Repository.RoleRepository;
 import javaGuides.duc.Service.AccountService;
+import javaGuides.duc.Service.RoleService;
 import javaGuides.duc.Service.studentService;
 import javaGuides.duc.Service.teacherService;
 
@@ -41,15 +45,18 @@ public class AuthController {
 	private RoleRepository roleRepository;
 	private teacherService teacherService;
 	private studentService studentService;
+	private RoleService roleService;
 
 	public AuthController(PasswordEncoder passwordEncoder, AccountService accountService, JwtProvider jwtProvider,
-			RoleRepository roleRepository,teacherService teacherService,studentService studentService) {
+			RoleRepository roleRepository, teacherService teacherService, studentService studentService,
+			RoleService roleService) {
 		this.passwordEncoder = passwordEncoder;
 		this.jwtProvider = jwtProvider;
 		this.accountService = accountService;
 		this.roleRepository = roleRepository;
-		this.teacherService=teacherService;
-		this.studentService=studentService;
+		this.teacherService = teacherService;
+		this.studentService = studentService;
+		this.roleService = roleService;
 	}
 
 	@PostMapping("/signin")
@@ -98,7 +105,7 @@ public class AuthController {
 						roles.add(AdminRole);
 						break;
 					case "teacher":
-						Role teacheRole=roleRepository.findByName("ROLE_TEACHER");
+						Role teacheRole = roleRepository.findByName("ROLE_TEACHER");
 						roles.add(teacheRole);
 						break;
 
@@ -114,27 +121,25 @@ public class AuthController {
 
 			user.setRoles(roles);
 			accountService.saveUser(user);
-			
+
 			for (Role role : roles) {
 
 				rolelist.append(role.getName() + " ");
 			}
-			Student student= studentService.findStudentByStudentCode(signUp.getCode());
-			if(student!=null)  {
-				//user.setStudent(student);
+			Student student = studentService.findStudentByStudentCode(signUp.getCode());
+			if (student != null) {
+				// user.setStudent(student);
 				student.setUser(user);
 				studentService.createStudent(student);
-			}
-			else {
-				teacher teacherdata=teacherService.findByTeacherCode(signUp.getCode());
-				if(teacherdata!=null) {
-				//user.setTeacher(teacherdata);
-				teacherdata.setUser(user);
-				teacherService.createTeacher(teacherdata);//save information
+			} else {
+				teacher teacherdata = teacherService.findByTeacherCode(signUp.getCode());
+				if (teacherdata != null) {
+					// user.setTeacher(teacherdata);
+					teacherdata.setUser(user);
+					teacherService.createTeacher(teacherdata);// save information
 				}
 			}
 
-			
 			return ResponseEntity.ok().body(rolelist.toString());
 
 		}
@@ -142,24 +147,39 @@ public class AuthController {
 	}
 
 	@PostMapping("/forgotpw")
-	public ResponseEntity<Map<String,String>> forgotPW(@RequestBody forgotPWdto forgot) throws Exception  {
-	try {
-		String message = accountService.forgotPassword(forgot.getEmail());
-		Map<String,String> map=new HashMap<>();
-		map.put("Message", message);
-		return ResponseEntity.ok().body(map);
-	} catch (Exception e) {
-		throw new Exception(e.getMessage());
-	}
-		
+	public ResponseEntity<Map<String, String>> forgotPW(@RequestBody forgotPWdto forgot) throws Exception {
+		try {
+			String message = accountService.forgotPassword(forgot.getEmail());
+			Map<String, String> map = new HashMap<>();
+			map.put("Message", message);
+			return ResponseEntity.ok().body(map);
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
+
 	}
 
 	@PostMapping("/resetpw")
-	public ResponseEntity<Map<String,String>> resetPW(@RequestBody resetPWdto reset) {
+	public ResponseEntity<Map<String, String>> resetPW(@RequestBody resetPWdto reset) {
 		String message = accountService.resetPassword(reset.getToken(), reset.getPassword());
-		Map<String,String> map=new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		map.put("Message", message);
 		return ResponseEntity.ok().body(map);
 	}
-	
+
+	@PostMapping("/role")
+	public ResponseEntity<String> createRole(@RequestParam String nameRole) {
+		String message = roleService.Create(nameRole);
+		return new ResponseEntity<String>(message, HttpStatus.OK);
+	}
+
+	@GetMapping("/getRole")
+	public ResponseEntity<List<String>> getAll() {
+		List<String> string = new ArrayList<>();
+		roleRepository.findAll().forEach(role -> {
+			string.add(role.getName());
+		});
+		return ResponseEntity.ok().body(string);
+	}
+
 }
