@@ -20,7 +20,7 @@ public class SwaggerConfig {
 	}
 
 	private ApiInfo apiInfo() {
-		return new ApiInfoBuilder().title("Learn Spring API").description("Learn Spring API reference for developers")
+		return new ApiInfoBuilder().title("Learn Spring API").description("Seed school API reference for developers")
 				.termsOfServiceUrl("").licenseUrl("").version("1.0").build();
 	}
 
