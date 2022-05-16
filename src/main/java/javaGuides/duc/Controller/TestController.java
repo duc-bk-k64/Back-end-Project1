@@ -55,13 +55,16 @@ public class TestController {
 		return ResponseEntity.ok().body(user);
 	}
 
-	@GetMapping("/usernameStudent")
+	@GetMapping("/studentcode")
 	@ApiOperation("Get username from token")
 	public ResponseEntity<String> getUsername() {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String username = userDetails.getUsername();
 		User user = accountService.findByUsername(username);
-		return ResponseEntity.ok().body(user.getStudent().getStudentCode());
+		if (user.getStudent() != null)
+			return ResponseEntity.ok().body(user.getStudent().getStudentCode());
+		else
+			return ResponseEntity.ok().body("User name has'nt student");
 	}
 
 }
